@@ -1,0 +1,16 @@
+# GitHub Pages Configuration
+title: GlideScript Reference Guide
+description: Comprehensive ServiceNow GlideSystem API documentation with examples and use cases
+theme: jekyll-theme-minimal
+show_downloads: false
+
+# SEO
+author: Your Name
+lang: en-US
+
+# URL
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown

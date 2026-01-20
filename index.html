@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlideScript Reference Guide | ServiceNow Developer Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #151922;
+            --bg-tertiary: #1f2430;
+            --accent-primary: #00f5a0;
+            --accent-secondary: #00d4aa;
+            --accent-tertiary: #0abdc6;
+            --text-primary: #e6e6e6;
+            --text-secondary: #b3b3b3;
+            --text-muted: #707a8c;
+            --border-color: #2d3748;
+            --code-bg: #1a1f2e;
+            --shadow: rgba(0, 245, 160, 0.1);
+            --glow: rgba(0, 245, 160, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 245, 160, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 212, 170, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        h1::after {
+            content: '_';
+            color: var(--accent-primary);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .github-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--accent-primary);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .github-link:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateY(-2px);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 3rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar navigation */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        .sidebar h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-list a:hover {
+            color: var(--accent-primary);
+            background: rgba(0, 245, 160, 0.05);
+            border-left-color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        .nav-list a.active {
+            color: var(--accent-primary);
+            background: rgba(0, 245, 160, 0.1);
+            border-left-color: var(--accent-primary);
+        }
+
+        /* Main content */
+        .content {
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .intro-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-tertiary));
+        }
+
+        .intro-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .intro-section p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Search box */
+        .search-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #searchBox:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 245, 160, 0.1);
+        }
+
+        .search-container::before {
+            content: '🔍';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        /* Section styling */
+        .section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--accent-primary);
+            font-family: 'Space Mono', monospace;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+        }
+
+        .section h3 {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section h3::before {
+            content: '▸';
+            color: var(--accent-secondary);
+            font-size: 1.2rem;
+        }
+
+        .section h4 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent-tertiary);
+            font-weight: 600;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        pre::before {
+            content: 'javascript';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        pre code {
+            color: var(--text-primary);
+        }
+
+        p code, li code {
+            background: var(--code-bg);
+            color: var(--accent-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+        }
+
+        /* Use case cards */
+        .use-case-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .use-case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-primary), var(--accent-tertiary));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .use-case-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 20px var(--shadow);
+            transform: translateX(4px);
+        }
+
+        .use-case-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        /* Warning boxes */
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        .warning::before {
+            content: '⚠️ ';
+            font-weight: bold;
+        }
+
+        /* Note boxes */
+        .note {
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 4px solid var(--accent-secondary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        .note::before {
+            content: '💡 ';
+            font-weight: bold;
+        }
+
+        /* Quick reference section */
+        .quick-ref {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quick-ref h3 {
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .quick-ref pre {
+            background: var(--bg-primary);
+            margin: 0.5rem 0;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover {
+            background: rgba(0, 245, 160, 0.05);
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--glow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .sidebar {
+                position: static;
+                max-height: none;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-meta {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: #ff79c6; }
+        .string { color: #50fa7b; }
+        .comment { color: #6272a4; font-style: italic; }
+        .function { color: #8be9fd; }
+        .number { color: #bd93f9; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>GlideScript Reference</h1>
+            <div class="header-meta">
+                <span>📚 ServiceNow Developer Guide</span>
+                <span>⚡ Version: Yokohama</span>
+                <a href="#" class="github-link">View on GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h3>Navigation</h3>
+            <ul class="nav-list">
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#user-information">User Information</a></li>
+                <li><a href="#session-management">Session Management</a></li>
+                <li><a href="#logging-debugging">Logging & Debugging</a></li>
+                <li><a href="#messages-ui">Messages & UI Feedback</a></li>
+                <li><a href="#date-time">Date & Time Methods</a></li>
+                <li><a href="#properties">System Properties</a></li>
+                <li><a href="#events">Event Management</a></li>
+                <li><a href="#security">Security & Roles</a></li>
+                <li><a href="#utilities">Utility Methods</a></li>
+                <li><a href="#use-cases">Common Use Cases</a></li>
+                <li><a href="#quick-ref">Quick Reference</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="intro" class="intro-section">
+                <h2>GlideSystem (gs) Complete Reference Guide</h2>
+                <p>
+                    Comprehensive documentation for ServiceNow's GlideSystem API. This guide provides clear examples, 
+                    use cases, and best practices for working with the <code>gs</code> object in server-side scripts. 
+                    Perfect for developers working on automation, business rules, and background scripts.
+                </p>
+            </section>
+
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchBox" 
+                    placeholder="Search methods, use cases, or examples (Ctrl+F)..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div id="content-container">
+                <!-- Content will be loaded here by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <div class="back-to-top" onclick="scrollToTop()">↑</div>
+
+    <footer>
+        <p>Created for ServiceNow Developers | GlideSystem API Reference Guide</p>
+        <p>Built with ❤️ for automation excellence | <a href="#intro">Back to Top</a></p>
+    </footer>
+
+    <script>
+        // Load markdown content and convert to HTML
+        async function loadContent() {
+            try {
+                const response = await fetch('glidescript_reference_guide.md');
+                const markdown = await response.text();
+                
+                // Simple markdown to HTML converter
+                let html = markdown
+                    // Headers
+                    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                    .replace(/^# (.*$)/gim, '<h2>$1</h2>')
+                    
+                    // Code blocks
+                    .replace(/```javascript\n([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
+                    .replace(/```\n([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
+                    
+                    // Inline code
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    
+                    // Bold
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    
+                    // Lists
+                    .replace(/^\- (.*$)/gim, '<li>$1</li>')
+                    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                    
+                    // Paragraphs
+                    .replace(/\n\n/g, '</p><p>')
+                    
+                    // Warnings
+                    .replace(/⚠️ \*\*Warning:\*\* /g, '<div class="warning">Warning: ')
+                    .replace(/⚠️ \*\*Note:\*\* /g, '<div class="note">Note: ')
+                    
+                    // Horizontal rules
+                    .replace(/^---$/gim, '<hr style="border: 1px solid var(--border-color); margin: 2rem 0;">');
+                
+                // Wrap sections
+                html = '<div class="section">' + html + '</div>';
+                html = html.replace(/<h2>/g, '</div><div class="section"><h2>');
+                
+                // Create IDs for sections
+                html = html.replace(/<h2>(.*?)<\/h2>/g, function(match, title) {
+                    const id = title.toLowerCase()
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/\s+/g, '-');
+                    return `<h2 id="${id}">${title}</h2>`;
+                });
+                
+                document.getElementById('content-container').innerHTML = html;
+                
+                // Highlight active nav links
+                updateActiveNavLinks();
+                
+            } catch (error) {
+                console.error('Error loading content:', error);
+                document.getElementById('content-container').innerHTML = `
+                    <div class="warning">
+                        <strong>Content Loading Error</strong><br>
+                        Please ensure the markdown file is in the same directory as this HTML file.
+                        You can paste the markdown content directly into this HTML file if needed.
+                    </div>
+                `;
+            }
+        }
+
+        // Update active navigation links based on scroll position
+        function updateActiveNavLinks() {
+            const sections = document.querySelectorAll('.section[id]');
+            const navLinks = document.querySelectorAll('.nav-list a');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - 150)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Back to top button visibility
+        window.addEventListener('scroll', () => {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Smooth scrolling for anchor links
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(e.target.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm) || searchTerm === '') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+
+        // Initialize
+        loadContent();
+    </script>
+</body>
+</html>
